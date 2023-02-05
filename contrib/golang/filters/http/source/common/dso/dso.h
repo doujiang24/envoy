@@ -63,6 +63,8 @@ public:
    */
   static DsoInstancePtr getDsoInstanceByID(std::string dso_id);
 
+  static bool cgocheck_disabled_;
+
 private:
   using DsoMapType = std::map<std::string, DsoInstancePtr>;
   struct DsoStoreType {
@@ -73,6 +75,7 @@ private:
   };
 
   static DsoStoreType& getDsoStore() { MUTABLE_CONSTRUCT_ON_FIRST_USE(DsoStoreType); }
+  static void disableCgoCheck();
 };
 
 } // namespace Dso

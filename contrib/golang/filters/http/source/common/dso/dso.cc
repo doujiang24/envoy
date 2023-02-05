@@ -1,11 +1,19 @@
 #include "contrib/golang/filters/http/source/common/dso/dso.h"
 
 #include "source/common/common/assert.h"
+#include "absl/strings/str_split.h"
+#include "absl/strings/str_join.h"
+#include <stdlib.h>
 
 namespace Envoy {
 namespace Dso {
 
+bool DsoInstanceManager::cgocheck_disabled_ = false;
+
 bool DsoInstanceManager::load(std::string dso_id, std::string dso_name) {
+  if (!cgocheck_disabled_) {
+    disableCgoCheck();
+  }
   ENVOY_LOG_MISC(debug, "load {} {} dso instance.", dso_id, dso_name);
   if (getDsoInstanceByID(dso_id) != nullptr) {
     return true;
@@ -30,6 +38,43 @@ DsoInstancePtr DsoInstanceManager::getDsoInstanceByID(std::string dso_id) {
   }
 
   return nullptr;
+}
+
+// Set cgocheck=0 in GODEBUG to disable cgocheck.
+// GODEBUG may have multiple items, i.e. GODEBUG=gctrace=1,invalidptr=1
+void DsoInstanceManager::disableCgoCheck() {
+  bool modified = false;
+  bool found = false;
+  std::vector<std::string> items;
+
+  const char* godebug = std::getenv("GODEBUG");
+  if (godebug != nullptr) {
+    items = absl::StrSplit(godebug, ',');
+    for (auto it = items.begin(); it != items.end(); ++it) {
+      std::vector<std::string> kv = absl::StrSplit(*it, '=');
+      auto key = kv[0];
+      auto value = kv[0];
+      if (key == "cgocheck") {
+        found = true;
+        if (value != "0") {
+          modified = true;
+          *it = "cgocheck=0";
+        }
+        break;
+      }
+    }
+  }
+  if (!found) {
+    modified = true;
+    items.push_back("cgocheck=0");
+  }
+  if (modified) {
+    auto newvalue = absl::StrJoin(items, ",");
+    setenv("GODEBUG", newvalue.c_str(), 1);
+    ENVOY_LOG_MISC(debug, "disabling cgocheck by setting GODEBUG to %s", newvalue);
+  } else {
+    ENVOY_LOG_MISC(debug, "cgocheck is already disabled");
+  }
 }
 
 template <typename T>
