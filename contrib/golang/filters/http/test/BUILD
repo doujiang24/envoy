@@ -14,7 +14,6 @@ envoy_cc_test(
     data = [
         "//contrib/golang/filters/http/test/test_data/passthrough:filter.so",
     ],
-    env = {"GODEBUG": "cgocheck=0"},
     deps = [
         "//contrib/golang/filters/http/source:config",
         "//test/mocks/server:factory_context_mocks",
@@ -28,7 +27,6 @@ envoy_cc_test(
     data = [
         "//contrib/golang/filters/http/test/test_data/passthrough:filter.so",
     ],
-    env = {"GODEBUG": "cgocheck=0"},
     deps = [
         "//contrib/golang/filters/http/source:golang_filter_lib",
         "//source/common/stream_info:stream_info_lib",
@@ -53,7 +51,6 @@ envoy_cc_test(
         "//contrib/golang/filters/http/test/test_data/echo:filter.so",
         "//contrib/golang/filters/http/test/test_data/passthrough:filter.so",
     ],
-    env = {"GODEBUG": "cgocheck=0"},
     deps = [
         "//contrib/golang/filters/http/source:config",
         "//source/exe:main_common_lib",

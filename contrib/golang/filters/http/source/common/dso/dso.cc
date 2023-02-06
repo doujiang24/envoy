@@ -71,7 +71,9 @@ void DsoInstanceManager::disableCgoCheck() {
   if (modified) {
     auto newvalue = absl::StrJoin(items, ",");
     setenv("GODEBUG", newvalue.c_str(), 1);
-    ENVOY_LOG_MISC(debug, "disabling cgocheck by setting GODEBUG to %s", newvalue);
+    ENVOY_LOG_MISC(debug, "disabling cgocheck by setting GODEBUG to {}", newvalue);
+    godebug = std::getenv("GODEBUG");
+    ENVOY_LOG_MISC(debug, "getting GODEBUG: {}", godebug);
   } else {
     ENVOY_LOG_MISC(debug, "cgocheck is already disabled");
   }
