@@ -85,7 +85,7 @@ function cleanup() {
 }
 
 cleanup
-trap cleanup EXIT
+# trap cleanup EXIT
 
 "$(dirname "$0")"/../bazel/setup_clang.sh "${LLVM_ROOT}"
 
@@ -98,8 +98,7 @@ BAZEL_BUILD_OPTIONS=(
   "--verbose_failures"
   "--experimental_generate_json_trace_profile"
   "--test_output=errors"
-  "--noshow_progress"
-  "--noshow_loading_progress"
+  "--subcommands=pretty_print"
   "--repository_cache=${BUILD_DIR}/repository_cache"
   "--experimental_repository_cache_hardlinks"
   "--action_env=CLANG_FORMAT"

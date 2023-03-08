@@ -2,8 +2,10 @@
 
 # Run a CI build/test target, e.g. docs, asan.
 
-set -e
+set -x
 
+echo $http_proxy
+echo $https_proxy
 
 build_setup_args=""
 if [[ "$1" == "format" || "$1" == "fix_proto_format" || "$1" == "check_proto_format" || "$1" == "docs" ||  \
@@ -473,7 +475,10 @@ elif [[ "$CI_TARGET" == "bazel.fuzz" ]]; then
   FUZZ_TEST_TARGETS=("$(bazel query "attr('tags','fuzzer',${TEST_TARGETS[*]})")")
   echo "bazel ASAN libFuzzer build with fuzz tests ${FUZZ_TEST_TARGETS[*]}"
   echo "Building envoy fuzzers and executing 100 fuzz iterations..."
-  bazel_with_collection test "${BAZEL_BUILD_OPTIONS[@]}" --config=asan-fuzzer "${FUZZ_TEST_TARGETS[@]}" --test_arg="-runs=10"
+  FUZZ_TEST_TARGETS=$TEST_TARGETS
+  bazel_with_collection test "${BAZEL_BUILD_OPTIONS[@]}" --config=asan-fuzzer "${FUZZ_TEST_TARGETS[@]}" \
+      --test_arg="contrib/golang/filters/http/test/golang_filter_corpus"
+  # --test_arg="-runs=10"
   exit 0
 elif [[ "$CI_TARGET" == "format" ]]; then
   setup_clang_toolchain
