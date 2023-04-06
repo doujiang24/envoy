@@ -1,4 +1,4 @@
-module github.com/doujiang24/envoy/contrib/golang
+module github.com/doujiang24/envoy/contrib
 
 go 1.18
 
