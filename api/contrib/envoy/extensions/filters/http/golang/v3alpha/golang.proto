@@ -97,3 +97,13 @@ message ConfigsPerRoute {
   //
   map<string, RouterPlugin> plugins_config = 1;
 }
+
+message StreamFilterConfig {
+  string filter_name = 1;
+  google.protobuf.Any config = 2;
+}
+
+message StreamFilterManager {
+  // Streaming filters that will be executed in the displayed order.
+  repeated StreamFilterConfig filters = 1;
+}
